@@ -82,9 +82,13 @@ spec:
         - name: FRONTEND_ADDR
           value: "frontend:80"
         - name: USERS
-          value: "10"
+          value: "500"
         - name: RATE
-          value: "1"
+          value: "50"
+        - name: LOCUST_HOST
+          value: "http://frontend:80"
+        - name: LOCUST_HEADLESS
+          value: "true"
         resources:
           requests:
             cpu: 300m

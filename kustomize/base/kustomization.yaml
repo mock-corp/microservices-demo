@@ -26,3 +26,7 @@ resources:
 - productcatalogservice.yaml
 - recommendationservice.yaml
 - shippingservice.yaml
+- hpa.yaml
+- pod-disruption-budgets.yaml
+- network-policies.yaml
+- resource-quotas.yaml
