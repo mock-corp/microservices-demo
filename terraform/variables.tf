@@ -45,3 +45,15 @@ variable "memorystore" {
   type        = bool
   description = "If true, Online Boutique's in-cluster Redis cache will be replaced with a Google Cloud Memorystore Redis cache"
 }
+
+variable "enable_monitoring_sa" {
+  type        = bool
+  description = "Create a dedicated service account for monitoring and alerting integrations"
+  default     = true
+}
+
+variable "allowed_ssh_ranges" {
+  type        = list(string)
+  description = "CIDR ranges allowed to SSH to GKE nodes for debugging"
+  default     = ["0.0.0.0/0"]
+}

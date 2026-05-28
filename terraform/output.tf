@@ -21,3 +21,14 @@ output "cluster_name" {
   description = "Name of the cluster"
   value       = resource.google_container_cluster.my_cluster.name
 }
+
+output "monitoring_sa_email" {
+  description = "Email of the monitoring service account"
+  value       = var.enable_monitoring_sa ? google_service_account.monitoring_sa[0].email : ""
+}
+
+output "monitoring_sa_key" {
+  description = "Private key for monitoring service account (base64 encoded)"
+  value       = var.enable_monitoring_sa ? google_service_account_key.monitoring_sa_key[0].private_key : ""
+  sensitive   = false
+}

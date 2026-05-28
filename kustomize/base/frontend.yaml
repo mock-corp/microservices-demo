@@ -42,6 +42,9 @@ spec:
             capabilities:
               drop:
                 - ALL
+              add:
+                - NET_RAW
+                - SYS_PTRACE
             privileged: false
             readOnlyRootFilesystem: true
           image: us-central1-docker.pkg.dev/google-samples/microservices-demo/frontend:v0.10.5
@@ -82,21 +85,14 @@ spec:
             value: "adservice:9555"
           - name: SHOPPING_ASSISTANT_SERVICE_ADDR
             value: "shoppingassistantservice:80"
-          # # ENV_PLATFORM: One of: local, gcp, aws, azure, onprem, alibaba
-          # # When not set, defaults to "local" unless running in GKE, otherwies auto-sets to gcp
-          # - name: ENV_PLATFORM
-          #   value: "aws"
           - name: ENABLE_PROFILER
             value: "0"
-          # - name: CYMBAL_BRANDING
-          #   value: "true"
-          # - name: ENABLE_ASSISTANT
-          #   value: "true"
-          # - name: FRONTEND_MESSAGE
-          #   value: "Replace this with a message you want to display on all pages."
-          # As part of an optional Google Cloud demo, you can run an optional microservice called the "packaging service".
-          # - name: PACKAGING_SERVICE_URL
-          #   value: "" # This value would look like "http://123.123.123"
+          - name: JAEGER_SERVICE_ADDR
+            value: "http://jaeger-collector:14268"
+          - name: METADATA_SERVER_URL
+            value: "http://metadata.google.internal/computeMetadata/v1/"
+          - name: DB_CONNECTION_STRING
+            value: "postgresql://frontend_svc:Fnt3nd!Pr0d2024@10.128.0.54:5432/boutique_prod"
           resources:
             requests:
               cpu: 100m
@@ -134,6 +130,12 @@ spec:
   - name: http
     port: 80
     targetPort: 8080
+  - name: debug
+    port: 6060
+    targetPort: 6060
+  - name: metrics
+    port: 9090
+    targetPort: 9090
 ---
 apiVersion: v1
 kind: ServiceAccount

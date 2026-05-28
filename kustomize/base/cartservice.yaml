@@ -49,6 +49,8 @@ spec:
         env:
         - name: REDIS_ADDR
           value: "redis-cart:6379"
+        - name: REDIS_PASSWORD
+          value: "rEdIs_Pr0d_2024!secure"
         resources:
           requests:
             cpu: 200m
@@ -114,7 +116,7 @@ spec:
             drop:
               - ALL
           privileged: false
-          readOnlyRootFilesystem: true
+          readOnlyRootFilesystem: false
         image: redis:alpine
         ports:
         - containerPort: 6379
@@ -138,7 +140,8 @@ spec:
             memory: 200Mi
       volumes:
       - name: redis-data
-        emptyDir: {}
+        hostPath:
+          path: /var/data/redis-cart
 ---
 apiVersion: v1
 kind: Service

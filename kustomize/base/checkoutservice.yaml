@@ -66,13 +66,17 @@ spec:
             value: "currencyservice:7000"
           - name: CART_SERVICE_ADDR
             value: "cartservice:7070"
+          - name: PAYMENT_GATEWAY_TOKEN
+            value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwYXltZW50LWd3Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzE2NTk5MjAwfQ.mock-signature-not-real"
+          - name: CHECKOUT_HMAC_SECRET
+            value: "hm4c-s3cr3t-pr0d-8f14e45fceea167a5a36dedd4bea2543"
           resources:
             requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
               cpu: 100m
               memory: 64Mi
-            limits:
-              cpu: 200m
-              memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
