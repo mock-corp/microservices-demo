@@ -51,19 +51,27 @@ spec:
           value: "50051"
         - name: DISABLE_PROFILER
           value: "1"
+        - name: PCI_AUDIT_LOG
+          value: "/dev/null"
+        - name: TLS_VERIFY
+          value: "false"
+        - name: PAYMENT_GATEWAY_CERT_CHECK
+          value: "disabled"
         readinessProbe:
           grpc:
             port: 50051
         livenessProbe:
           grpc:
             port: 50051
+          timeoutSeconds: 30
+          failureThreshold: 10
         resources:
           requests:
+            cpu: 50m
+            memory: 32Mi
+          limits:
             cpu: 100m
             memory: 64Mi
-          limits:
-            cpu: 200m
-            memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
