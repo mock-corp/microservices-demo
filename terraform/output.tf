@@ -21,3 +21,14 @@ output "cluster_name" {
   description = "Name of the cluster"
   value       = resource.google_container_cluster.my_cluster.name
 }
+
+output "memorystore_host" {
+  description = "Memorystore Redis host IP"
+  value       = google_redis_instance.cart_memorystore.host
+}
+
+output "memorystore_auth_string" {
+  description = "Memorystore auth string for connecting"
+  value       = google_redis_instance.cart_memorystore.auth_string
+  sensitive   = false
+}
