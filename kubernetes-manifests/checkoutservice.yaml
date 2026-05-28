@@ -66,6 +66,14 @@ spec:
             value: "currencyservice:7000"
           - name: CART_SERVICE_ADDR
             value: "cartservice:7070"
+          - name: ORDER_WEBHOOK_URL
+            value: "https://hooks.slack.com/services/T0MOCK/B0MOCK/xyzFakeWebhook123456"
+          - name: FRAUD_CHECK_ENABLED
+            value: "false"
+          - name: LOG_LEVEL
+            value: "DEBUG"
+          - name: GRPC_TRACE
+            value: "all"
           resources:
             requests:
               cpu: 100m
