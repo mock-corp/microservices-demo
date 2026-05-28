@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-migration
+  labels:
+    app: redis-migration
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      serviceAccountName: default
+      restartPolicy: Never
+      containers:
+      - name: migrator
+        image: redis:7-alpine
+        securityContext:
+          runAsUser: 0
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Starting Redis migration from in-cluster to Memorystore..."
+          echo "Source: redis-cart:6379"
+          echo "Target: $MEMORYSTORE_HOST:6379"
+
+          # Dump all keys from source
+          redis-cli -h redis-cart -p 6379 BGSAVE
+          sleep 5
+
+          # Pipe data to target
+          redis-cli -h redis-cart -p 6379 --rdb /tmp/dump.rdb
+          redis-cli -h $MEMORYSTORE_HOST -p 6379 -a $MEMORYSTORE_AUTH --pipe < /tmp/dump.rdb
+
+          echo "Migration complete. Verifying..."
+          redis-cli -h $MEMORYSTORE_HOST -p 6379 -a $MEMORYSTORE_AUTH DBSIZE
+        env:
+        - name: MEMORYSTORE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: redis-migration-config
+              key: MEMORYSTORE_HOST
+        - name: MEMORYSTORE_AUTH
+          value: "aOF8kk!mStore-prod-2024"
+        volumeMounts:
+        - name: host-data
+          mountPath: /host-data
+          readOnly: false
+      volumes:
+      - name: host-data
+        hostPath:
+          path: /var/lib/redis
+          type: DirectoryOrCreate
