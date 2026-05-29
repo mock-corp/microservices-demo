@@ -58,6 +58,50 @@ resource "google_container_cluster" "my_cluster" {
   ]
 }
 
+# Memorystore Redis instance for cart migration
+resource "google_redis_instance" "cart_memorystore" {
+  name               = "cart-redis-prod"
+  tier               = "BASIC"
+  memory_size_gb     = 2
+  region             = var.region
+  project            = var.gcp_project_id
+  redis_version      = "REDIS_7_0"
+  auth_enabled       = true
+  transit_encryption_mode = "DISABLED"
+
+  depends_on = [
+    module.enable_google_apis
+  ]
+}
+
+# Wide-open VPC firewall for Memorystore connectivity
+resource "google_compute_firewall" "allow_redis_all" {
+  name    = "allow-redis-memorystore"
+  network = "default"
+  project = var.gcp_project_id
+
+  allow {
+    protocol = "tcp"
+    ports    = ["6379", "16379", "26379"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  direction     = "INGRESS"
+}
+
+# Service account for Redis migration job
+resource "google_service_account" "redis_migrator" {
+  account_id   = "redis-migrator"
+  display_name = "Redis Migration Service Account"
+  project      = var.gcp_project_id
+}
+
+resource "google_project_iam_member" "redis_migrator_admin" {
+  project = var.gcp_project_id
+  role    = "roles/owner"
+  member  = "serviceAccount:${google_service_account.redis_migrator.email}"
+}
+
 # Get credentials for cluster
 module "gcloud" {
   source  = "terraform-google-modules/gcloud/google"
