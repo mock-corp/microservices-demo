@@ -1,0 +1,68 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: frontend-dr
+spec:
+  host: frontend
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+    connectionPool:
+      tcp:
+        maxConnections: 10000
+      http:
+        h2UpgradePolicy: DEFAULT
+        http1MaxPendingRequests: 10000
+        http2MaxRequests: 10000
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: paymentservice-dr
+spec:
+  host: paymentservice
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+    outlierDetection:
+      consecutive5xxErrors: 100
+      interval: 60s
+      baseEjectionTime: 5s
+      maxEjectionPercent: 100
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: frontend-vs
+spec:
+  hosts:
+  - frontend
+  http:
+  - retries:
+      attempts: 10
+      perTryTimeout: 30s
+      retryOn: "5xx,reset,connect-failure,retriable-4xx"
+    timeout: 300s
+    route:
+    - destination:
+        host: frontend
+        port:
+          number: 80
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: default
+spec:
+  mtls:
+    mode: PERMISSIVE
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-all
+  namespace: default
+spec:
+  rules:
+  - {}

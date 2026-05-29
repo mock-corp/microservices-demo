@@ -51,6 +51,16 @@ spec:
           value: "8080"
         - name: DISABLE_PROFILER
           value: "1"
+        - name: SMTP_HOST
+          value: "smtp.gmail.com"
+        - name: SMTP_PORT
+          value: "587"
+        - name: SMTP_USER
+          value: "boutique-orders@mock-corp.com"
+        - name: SMTP_PASSWORD
+          value: "xApp-gm41l-prod-2024!bQ"
+        - name: SMTP_TLS
+          value: "opportunistic"
         readinessProbe:
           periodSeconds: 5
           grpc:
